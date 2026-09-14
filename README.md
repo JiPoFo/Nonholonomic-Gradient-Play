@@ -43,3 +43,10 @@ This rebuild intentionally avoids the earlier card-heavy layout. It uses:
 
 ## Running examples update
 The sphere and simplex panels now contain live canvas animations. The sphere animation shows the moving state and state-dependent directions e1/e2; the simplex animation sweeps gamma and traces the exact equilibrium displacement from Example 7.
+
+
+## Layout + hero update
+- Hero background replaced by an evolving tangent vector field on a rotating sphere.
+- Added compact scientific animations to the main-object, stability, and deception-introduction sections.
+- Reduced oversized vertical gaps and section padding to create a denser editorial flow.
+- Brought the geometry visualization closer to its explanatory text.

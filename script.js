@@ -36,66 +36,110 @@ function arrow(ctx, x, y, dx, dy, color, alpha=1, width=1.4) {
   ctx.restore();
 }
 
-// HERO — two families of state-dependent directions flowing on a curved sheet.
+// HERO — evolving tangent vector field over a rotating sphere.
 const hero = document.getElementById('heroCanvas');
 const hctx = hero.getContext('2d');
 let heroT = 0;
-const particles = Array.from({length:24},(_,i)=>({
-  u:(i*.173)%1,
-  row:(i%9)-4,
-  speed:.00045 + (i%5)*.000055,
-  family:i%2
-}));
 
-function sheetPoint(u,v,w,h,t){
-  const x=w*(.46+.52*u);
-  const mid=h*(.48-.10*Math.sin(Math.PI*u));
-  const y=mid + v*h*.055*(.5+.5*Math.sin(Math.PI*u))
-        + h*.025*Math.sin(5.3*u+t*.4)
-        + h*.012*Math.sin(13*u+v*.7-t*.18);
-  return {x,y};
+function rot3(p, yaw, pitch){
+  const cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch);
+  const x1=cy*p.x+sy*p.z;
+  const z1=-sy*p.x+cy*p.z;
+  return {x:x1,y:cp*p.y-sp*z1,z:sp*p.y+cp*z1};
+}
+function heroProj(p,cx,cy,R,yaw,pitch){
+  const q=rot3(p,yaw,pitch);
+  return {x:cx+q.x*R,y:cy-q.y*R,z:q.z};
+}
+function tangentBasis(p){
+  // two smooth tangent fields on most of the visible sphere
+  const e1={x:-p.y,y:p.x,z:0};
+  const n1=Math.hypot(e1.x,e1.y,e1.z)||1;
+  e1.x/=n1;e1.y/=n1;e1.z/=n1;
+  const e2={
+    x:p.y*e1.z-p.z*e1.y,
+    y:p.z*e1.x-p.x*e1.z,
+    z:p.x*e1.y-p.y*e1.x
+  };
+  const n2=Math.hypot(e2.x,e2.y,e2.z)||1;
+  e2.x/=n2;e2.y/=n2;e2.z/=n2;
+  return {e1,e2};
 }
 function drawHero(){
   const {w,h}=sizeCanvas(hero);
   hctx.clearRect(0,0,w,h);
-  heroT += 1;
+  heroT += .0075;
 
-  const glow=hctx.createRadialGradient(w*.77,h*.42,0,w*.77,h*.42,h*.42);
-  glow.addColorStop(0,'rgba(108,168,141,.10)');
-  glow.addColorStop(.45,'rgba(179,162,231,.045)');
+  const cx=w*.76, cy=h*.47, R=Math.min(w,h)*.33;
+  const yaw=-.9+heroT*.18, pitch=.36+.05*Math.sin(heroT*.4);
+
+  const glow=hctx.createRadialGradient(cx,cy,0,cx,cy,R*1.35);
+  glow.addColorStop(0,'rgba(108,168,141,.105)');
+  glow.addColorStop(.45,'rgba(179,162,231,.035)');
   glow.addColorStop(1,'rgba(0,0,0,0)');
-  hctx.fillStyle=glow;hctx.fillRect(0,0,w,h);
+  hctx.fillStyle=glow;hctx.beginPath();hctx.arc(cx,cy,R*1.35,0,Math.PI*2);hctx.fill();
 
-  for(let r=-5;r<=5;r++){
-    const color=r%2===0?'rgba(159,199,181,.18)':'rgba(179,162,231,.12)';
-    hctx.strokeStyle=color;hctx.lineWidth=.7*DPR;
+  // sphere silhouette
+  const sg=hctx.createRadialGradient(cx-R*.28,cy-R*.30,R*.05,cx,cy,R);
+  sg.addColorStop(0,'rgba(36,55,49,.18)');
+  sg.addColorStop(.75,'rgba(10,15,15,.48)');
+  sg.addColorStop(1,'rgba(7,10,11,.06)');
+  hctx.fillStyle=sg;hctx.beginPath();hctx.arc(cx,cy,R,0,Math.PI*2);hctx.fill();
+  hctx.strokeStyle='rgba(159,199,181,.18)';hctx.lineWidth=.9*DPR;hctx.stroke();
+
+  // latitude/longitude
+  hctx.lineWidth=.55*DPR;
+  for(let lat=-3;lat<=3;lat++){
+    const th=(lat/4)*(Math.PI/2);
+    const z=Math.sin(th), rr=Math.cos(th);
+    hctx.strokeStyle='rgba(255,255,255,.032)';
     hctx.beginPath();
-    for(let k=0;k<=120;k++){
-      const u=k/120,p=sheetPoint(u,r,w,h,heroT*.003);
-      k?hctx.lineTo(p.x,p.y):hctx.moveTo(p.x,p.y);
+    for(let k=0;k<=90;k++){
+      const a=2*Math.PI*k/90;
+      const P=heroProj({x:rr*Math.cos(a),y:rr*Math.sin(a),z},cx,cy,R,yaw,pitch);
+      k?hctx.lineTo(P.x,P.y):hctx.moveTo(P.x,P.y);
     }
     hctx.stroke();
   }
-  for(let c=0;c<=11;c++){
-    const u=.04+c*.087;
-    hctx.strokeStyle='rgba(255,255,255,.035)';
-    hctx.lineWidth=.55*DPR;hctx.beginPath();
-    for(let r=-5;r<=5;r++){
-      const p=sheetPoint(u,r,w,h,heroT*.003);
-      r===-5?hctx.moveTo(p.x,p.y):hctx.lineTo(p.x,p.y);
+  for(let m=0;m<10;m++){
+    const a=2*Math.PI*m/10;
+    hctx.strokeStyle='rgba(255,255,255,.026)';
+    hctx.beginPath();
+    for(let k=0;k<=80;k++){
+      const th=-Math.PI/2+Math.PI*k/80;
+      const p={x:Math.cos(th)*Math.cos(a),y:Math.cos(th)*Math.sin(a),z:Math.sin(th)};
+      const P=heroProj(p,cx,cy,R,yaw,pitch);
+      k?hctx.lineTo(P.x,P.y):hctx.moveTo(P.x,P.y);
     }
     hctx.stroke();
   }
 
-  particles.forEach((p,i)=>{
-    p.u=(p.u+p.speed)%1;
-    const P=sheetPoint(p.u,p.row,w,h,heroT*.003);
-    const color=p.family===0?'#9fc7b5':'#b3a2e7';
-    hctx.shadowColor=color;hctx.shadowBlur=(i%6===0?12:5)*DPR;
-    hctx.fillStyle=color;hctx.globalAlpha=i%6===0?.9:.42;
-    hctx.beginPath();hctx.arc(P.x,P.y,(i%6===0?2.6:1.2)*DPR,0,Math.PI*2);hctx.fill();
-    hctx.shadowBlur=0;hctx.globalAlpha=1;
-  });
+  // tangent vector field on visible hemisphere
+  for(let lat=-4;lat<=4;lat++){
+    const th=(lat/5)*(Math.PI/2*.82);
+    for(let m=0;m<16;m++){
+      const a=2*Math.PI*m/16 + .18*Math.sin(heroT*.7+lat*.4);
+      const p={x:Math.cos(th)*Math.cos(a),y:Math.cos(th)*Math.sin(a),z:Math.sin(th)};
+      const P=heroProj(p,cx,cy,R,yaw,pitch);
+      if(P.z<-.12) continue;
+      const {e1,e2}=tangentBasis(p);
+      // evolving combination
+      const q=.72*Math.sin(a*2+heroT*1.4)+.32*Math.cos(th*3-heroT*.8);
+      const v={x:e1.x+q*e2.x,y:e1.y+q*e2.y,z:e1.z+q*e2.z};
+      const eps=.055;
+      const Q=heroProj({x:p.x+eps*v.x,y:p.y+eps*v.y,z:p.z+eps*v.z},cx,cy,R,yaw,pitch);
+      const col=(m+lat)%2===0?'#9fc7b5':'#b3a2e7';
+      arrow(hctx,P.x,P.y,(Q.x-P.x)*1.25,(Q.y-P.y)*1.25,col,.24+.34*Math.max(0,P.z),.75);
+    }
+  }
+
+  // moving trajectory on the sphere
+  const th=.35+.22*Math.sin(heroT*.7), ph=heroT*1.35;
+  const p={x:Math.cos(th)*Math.cos(ph),y:Math.cos(th)*Math.sin(ph),z:Math.sin(th)};
+  const P=heroProj(p,cx,cy,R,yaw,pitch);
+  hctx.shadowColor='#f0efe9';hctx.shadowBlur=12*DPR;hctx.fillStyle='#f0efe9';
+  hctx.beginPath();hctx.arc(P.x,P.y,4.2*DPR,0,Math.PI*2);hctx.fill();hctx.shadowBlur=0;
+
   requestAnimationFrame(drawHero);
 }
 drawHero();
@@ -301,6 +345,72 @@ copyBtn.addEventListener('click',async()=>{
   }
 });
 
+
+
+// SECTION 01 — payoff gradient projected into an admissible direction.
+const mainObjectCanvas=document.getElementById('mainObjectCanvas');
+const moc=mainObjectCanvas.getContext('2d');
+let mot=0;
+function drawMainObject(){
+  const {w,h}=sizeCanvas(mainObjectCanvas);moc.clearRect(0,0,w,h);mot+=.012;
+  const cx=w*.54,cy=h*.55;
+  // curved manifold arc
+  moc.strokeStyle='rgba(255,255,255,.10)';moc.lineWidth=1*DPR;
+  moc.beginPath();
+  for(let k=0;k<=100;k++){
+    const u=k/100,x=w*.06+u*w*.88,y=cy+Math.sin((u-.1)*Math.PI*1.35)*h*.19;
+    k?moc.lineTo(x,y):moc.moveTo(x,y);
+  }moc.stroke();
+  const u=.52+.18*Math.sin(mot*.65),x=w*.06+u*w*.88,y=cy+Math.sin((u-.1)*Math.PI*1.35)*h*.19;
+  const slope=Math.cos((u-.1)*Math.PI*1.35)*Math.PI*1.35*h*.19/(w*.88);
+  const ang=Math.atan(slope);
+  // full payoff gradient
+  arrow(moc,x,y,42*DPR*Math.cos(ang-.85),42*DPR*Math.sin(ang-.85),'#b3a2e7',.85,1.8);
+  // admissible tangent direction
+  arrow(moc,x,y,58*DPR*Math.cos(ang),58*DPR*Math.sin(ang),'#9fc7b5',1,2.0);
+  moc.fillStyle='#f0efe9';moc.beginPath();moc.arc(x,y,3.8*DPR,0,Math.PI*2);moc.fill();
+  requestAnimationFrame(drawMainObject);
+}
+drawMainObject();
+
+// SECTION 03 — a moving frame whose curvature affects the intrinsic linearization.
+const stabilityCanvas=document.getElementById('stabilityCanvas');
+const stc=stabilityCanvas.getContext('2d');
+let stt=0;
+function drawStabilityMini(){
+  const {w,h}=sizeCanvas(stabilityCanvas);stc.clearRect(0,0,w,h);stt+=.01;
+  const cx=w*.53,cy=h*.52,R=Math.min(w,h)*.28;
+  stc.strokeStyle='rgba(255,255,255,.09)';stc.lineWidth=1*DPR;
+  stc.beginPath();stc.ellipse(cx,cy,R*1.7,R*.78,-.18,0,Math.PI*2);stc.stroke();
+  for(let i=0;i<9;i++){
+    const a=2*Math.PI*i/9+stt*.18;
+    const x=cx+Math.cos(a)*R*1.5,y=cy+Math.sin(a)*R*.68;
+    const frameAng=a+.72*Math.sin(a*2+stt);
+    arrow(stc,x,y,25*DPR*Math.cos(frameAng),25*DPR*Math.sin(frameAng),'#9fc7b5',.55,1.15);
+    arrow(stc,x,y,20*DPR*Math.cos(frameAng+Math.PI/2),20*DPR*Math.sin(frameAng+Math.PI/2),'#b3a2e7',.45,1.0);
+  }
+  requestAnimationFrame(drawStabilityMini);
+}
+drawStabilityMini();
+
+// SECTION 04 intro — nominal vs tilted direction.
+const tiltIntroCanvas=document.getElementById('tiltIntroCanvas');
+const tic=tiltIntroCanvas.getContext('2d');
+let tit=0;
+function drawTiltIntro(){
+  const {w,h}=sizeCanvas(tiltIntroCanvas);tic.clearRect(0,0,w,h);tit+=.012;
+  const x=w*.28,y=h*.58;
+  line(tic,w*.06,h*.73,w*.94,h*.73,'rgba(15,20,22,.12)',1);
+  arrow(tic,x,y,70*DPR,0,'#426e5d',.9,2);
+  arrow(tic,x,y,0,-62*DPR,'#6a5f8e',.75,2);
+  const g=.75+.45*Math.sin(tit*.8);
+  arrow(tic,w*.64,y,42*g*DPR,-62*DPR,'#a54f3f',.95,2.2);
+  tic.fillStyle='rgba(15,20,22,.56)';tic.font=`${9*DPR}px DM Mono, monospace`;
+  tic.fillText('nominal e₂',x-8*DPR,h*.20);
+  tic.fillText('tilted e₂ + γe₁',w*.60,h*.20);
+  requestAnimationFrame(drawTiltIntro);
+}
+drawTiltIntro();
 
 // RUNNING EXAMPLE A — animated sphere with state-dependent actuation directions.
 const sphereExampleCanvas=document.getElementById('sphereExampleCanvas');

@@ -73,6 +73,10 @@
           <p>
             This is the central object of the paper: payoff ascent filtered through the geometry of what each agent can physically actuate.
           </p>
+          <div class="mini-figure">
+            <canvas id="mainObjectCanvas" aria-label="Illustration of payoff gradient projected through admissible directions"></canvas>
+            <div class="mini-legend"><span class="sage-dot"></span> admissible direction <span class="violet-dot"></span> payoff gradient</div>
+          </div>
         </div>
       </div>
 
@@ -147,6 +151,9 @@
         </div>
 
         <div class="jacobian-decomp">
+          <div class="stability-visual">
+            <canvas id="stabilityCanvas" aria-label="Illustration of a moving actuation frame and intrinsic linearization"></canvas>
+          </div>
           <div class="jacobian-equation">
             \[
             (A_{ij})_{p,q}
@@ -175,14 +182,17 @@
           <div>
             <h2>The deceiver does not alter the victim's payoff.<br>It tilts the directions through which that payoff acts.</h2>
           </div>
-          <p>
-            With privileged knowledge of the victim's learning signal, agent 1 can produce
-            \[
-            \widetilde e_1=e_1,\qquad
-            \widetilde e_2=e_2+\gamma e_1.
-            \]
-            The victim's projected gradient is therefore biased, and the equilibrium moves.
-          </p>
+          <div class="deception-intro">
+            <p>
+              With privileged knowledge of the victim's learning signal, agent 1 can produce
+              \[
+              \widetilde e_1=e_1,\qquad
+              \widetilde e_2=e_2+\gamma e_1.
+              \]
+              The victim's projected gradient is therefore biased, and the equilibrium moves.
+            </p>
+            <canvas id="tiltIntroCanvas" aria-label="Illustration of nominal and tilted directions"></canvas>
+          </div>
         </div>
 
         <div class="deception-workbench">
