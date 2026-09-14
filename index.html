@@ -41,7 +41,7 @@
       </div>
       <div class="hero-caption reveal delay-2">
         <span class="dot"></span>
-        Each agent climbs its own payoff — but only along the directions it can physically actuate.
+        An intrinsic framework for strategic interactions on curved state spaces with restricted, non-commuting actuation.
       </div>
     </section>
 
@@ -49,6 +49,27 @@
       <div class="kicker reveal">THE CORE IDEA</div>
       <h2 class="section-title reveal">Gradient play, without pretending<br>the world is flat.</h2>
       <p class="lead reveal">Strategic agents often move on curved state spaces and through restricted, state-dependent actuation directions. The paper develops an intrinsic theory that respects both structures, rather than flattening them into coordinates.</p>
+
+      <div class="core-dynamics reveal">
+        <div class="core-dynamics-copy">
+          <span>THE DYNAMICS WE STUDY · EQ. (3)</span>
+          <p>
+            Each agent modifies the shared state through the vector fields it controls,
+            with the payoff derivative along each admissible direction determining the
+            corresponding input.
+          </p>
+        </div>
+        <div class="core-dynamics-equation">
+          \[
+          \dot{x}
+          =
+          \sum_{i=1}^{N}\kappa_i
+          \sum_{j=1}^{d_i}
+          \mathcal{L}_{f_{i,j}}(J_i)(x)\,f_{i,j}(x),
+          \qquad x\in\mathcal{M}.
+          \]
+        </div>
+      </div>
 
       <div class="triptych">
         <article class="glass reveal">
@@ -83,10 +104,37 @@
           <div class="accent-formula"><span>Intrinsic target dynamics</span><b>\(\dot x=\sum_i \kappa_i\,\mathrm{grad}_{E_i}J_i(x)\)</b></div>
         </div>
       </div>
-      <div class="visual-card reveal delay-1">
-        <div class="visual-head"><span>Sphere example</span><span class="live">● LIVE</span></div>
-        <canvas id="sphereCanvas"></canvas>
-        <div class="visual-foot">Two non-commuting actuation fields on the upper hemisphere. Move the pointer across the disk to inspect the local admissible directions.</div>
+      <div class="visual-card mapping-card reveal delay-1">
+        <div class="visual-head">
+          <span>Sphere example: manifold → chart</span>
+          <span class="live">● INTERACTIVE</span>
+        </div>
+
+        <div class="mapping-stage">
+          <div class="mapping-panel">
+            <div class="mapping-panel-label">1 · State on the manifold \(\mathcal{S}^2\)</div>
+            <canvas id="sphere3DCanvas" aria-label="Upper hemisphere with local actuation directions"></canvas>
+          </div>
+
+          <div class="mapping-arrow" aria-hidden="true">
+            <span>\(\phi\)</span>
+            <b>→</b>
+            <small>\(\phi(x)=(x_1,x_2)\)</small>
+          </div>
+
+          <div class="mapping-panel">
+            <div class="mapping-panel-label">2 · Coordinates on the open disk \(\mathcal{D}^2\)</div>
+            <canvas id="sphereCanvas" aria-label="Interactive chart of the upper hemisphere"></canvas>
+          </div>
+        </div>
+
+        <div class="visual-foot mapping-foot">
+          <span>Move the pointer over the disk.</span>
+          The selected chart point \(\xi=(x_1,x_2)\) is lifted to
+          \(x=(x_1,x_2,\sqrt{1-x_1^2-x_2^2})\in\mathcal{S}^2\).
+          The cyan and magenta arrows show the corresponding local directions
+          \(e_1\) and \(e_2\) in both representations.
+        </div>
       </div>
     </section>
 
