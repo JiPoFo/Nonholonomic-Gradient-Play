@@ -1,267 +1,354 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#070a0f" />
-  <title>Non-Holonomic Gradient Play — Stability and Deception in Games on Manifolds</title>
-  <meta name="description" content="Interactive project page for Non-Holonomic Gradient Play: Stability and Deception in Games on Manifolds." />
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0a0d0f">
+  <title>Non-Holonomic Gradient Play</title>
+  <meta name="description" content="Interactive project page for Non-Holonomic Gradient Play: Stability and Deception in Games on Manifolds.">
+  <link rel="stylesheet" href="style.css">
   <script>
-    window.MathJax = { tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] }, svg: { fontCache: 'global' } };
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] },
+      svg: { fontCache: 'global' }
+    };
   </script>
   <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
 </head>
 <body>
-  <div class="noise"></div>
-  <nav class="nav">
-    <a class="brand" href="#top"><span class="brand-mark"></span>NHGP</a>
-    <div class="nav-links">
-      <a href="#idea">Idea</a><a href="#geometry">Geometry</a><a href="#deception">Deception</a><a href="#results">Results</a><a href="#paper">Paper</a>
-    </div>
-    <a class="pill small" href="assets/paper.pdf" target="_blank">PDF ↗</a>
-  </nav>
+  <header class="topbar">
+    <a class="wordmark" href="#top" aria-label="Back to top">
+      <span class="mark"></span>
+      <span>NHGP</span>
+    </a>
+    <nav aria-label="Main navigation">
+      <a href="#idea">Idea</a>
+      <a href="#geometry">Geometry</a>
+      <a href="#stability">Stability</a>
+      <a href="#deception">Deception</a>
+      <a href="#paper">Paper</a>
+    </nav>
+    <a class="pdf-link" href="assets/paper.pdf" target="_blank" rel="noreferrer">PDF ↗</a>
+  </header>
 
   <main id="top">
-    <section class="hero section-wide">
+    <section class="hero">
       <canvas id="heroCanvas" aria-hidden="true"></canvas>
-      <div class="hero-glow"></div>
-      <div class="hero-content reveal">
-        <div class="eyebrow">GAMES ON MANIFOLDS · NON-HOLONOMIC SYSTEMS · DECEPTION</div>
+      <div class="hero-copy">
+        <p class="overline">GAMES ON MANIFOLDS · RESTRICTED ACTUATION · DECEPTION</p>
         <h1>Non-Holonomic<br><span>Gradient Play</span></h1>
-        <p class="hero-sub">Stability and Deception in Games on Manifolds</p>
-        <div class="authors-inline">
-          <span>Mahmoud Abdelgalil</span><i>·</i><span>Miroslav Krstic</span><i>·</i><span>Jorge I. Poveda</span>
-        </div>
-        <p class="affil">University at Buffalo · University of California San Diego</p>
+        <p class="subtitle">Stability and Deception in Games on Manifolds</p>
+        <p class="authors">Mahmoud Abdelgalil <b>·</b> Miroslav Krstic <b>·</b> Jorge I. Poveda</p>
+        <p class="affiliation">University at Buffalo · University of California San Diego</p>
         <div class="hero-actions">
-          <a class="pill" href="assets/paper.pdf" target="_blank">Read the paper</a>
-          <a class="pill ghost" href="#deception">Explore deception ↓</a>
+          <a class="button primary" href="assets/paper.pdf" target="_blank" rel="noreferrer">Read the paper</a>
+          <a class="button secondary" href="#deception">See geometric deception ↓</a>
         </div>
       </div>
-      <div class="hero-caption reveal delay-2">
-        <span class="dot"></span>
-        An intrinsic framework for strategic interactions on curved state spaces with restricted, non-commuting actuation.
-      </div>
+      <p class="hero-note">
+        The game lives on a manifold. Each agent can move only along its own state-dependent directions.
+      </p>
     </section>
 
-    <section id="idea" class="section">
-      <div class="kicker reveal">THE CORE IDEA</div>
-      <h2 class="section-title reveal">Gradient play, without pretending<br>the world is flat.</h2>
-      <p class="lead reveal">Strategic agents often move on curved state spaces and through restricted, state-dependent actuation directions. The paper develops an intrinsic theory that respects both structures, rather than flattening them into coordinates.</p>
-
-      <div class="core-dynamics reveal">
-        <div class="core-dynamics-copy">
-          <span>THE DYNAMICS WE STUDY · EQ. (3)</span>
-          <p>
-            Each agent modifies the shared state through the vector fields it controls,
-            with the payoff derivative along each admissible direction determining the
-            corresponding input.
+    <section id="idea" class="section idea-section">
+      <div class="section-label">01 · THE MAIN OBJECT</div>
+      <div class="idea-grid">
+        <div>
+          <h2>Gradient play, without pretending the world is flat.</h2>
+          <p class="lead">
+            A shared state \(x\in\mathcal M\) evolves on a smooth manifold. Agent \(i\)
+            maximizes its payoff \(J_i\), but it can act only through a family of
+            vector fields \(f_{i,j}\). The resulting interaction is
           </p>
         </div>
-        <div class="core-dynamics-equation">
+        <div class="equation-main">
           \[
           \dot{x}
           =
           \sum_{i=1}^{N}\kappa_i
           \sum_{j=1}^{d_i}
-          \mathcal{L}_{f_{i,j}}(J_i)(x)\,f_{i,j}(x),
-          \qquad x\in\mathcal{M}.
+          \mathcal{L}_{f_{i,j}}(J_i)(x)\,f_{i,j}(x).
+          \tag{3}
           \]
+          <p>
+            This is the central object of the paper: payoff ascent filtered through the geometry of what each agent can physically actuate.
+          </p>
         </div>
       </div>
 
-      <div class="triptych">
-        <article class="glass reveal">
-          <div class="card-index">01</div>
-          <h3>Geometry</h3>
-          <p>A bundle-splitting condition induces a Riemannian metric under which the averaged interaction becomes a sum of projected gradients.</p>
-          <div class="mini-eq">\(\dot x = \sum_i \kappa_i\,\mathrm{grad}_{E_i} J_i(x)\)</div>
+      <div class="idea-rule"></div>
+
+      <div class="three-statements">
+        <div>
+          <span>GEOMETRY</span>
+          <strong>Actuation directions define distributions \(E_i\subset T\mathcal M\).</strong>
+        </div>
+        <div>
+          <span>INTRINSIC VIEW</span>
+          <strong>The same dynamics become projected Riemannian gradient play.</strong>
+        </div>
+        <div>
+          <span>ADVERSARIAL VIEW</span>
+          <strong>Privileged information can tilt a victim's effective distribution.</strong>
+        </div>
+      </div>
+    </section>
+
+    <section id="geometry" class="section geometry-section">
+      <div class="section-label">02 · GEOMETRY</div>
+      <div class="geometry-head">
+        <div>
+          <h2>What an agent wants and what it can do are different objects.</h2>
+          <p class="lead">
+            Under a bundle-splitting condition, the paper constructs a Riemannian metric
+            for which the interaction admits the intrinsic representation
+            \[
+              \dot x=\sum_{i=1}^{N}\kappa_i\,\operatorname{grad}_{E_i}J_i(x).
+            \]
+          </p>
+        </div>
+        <div class="geometry-caption">
+          <span>PROJECT</span>
+          <p>
+            The full gradient lives in \(T_x\mathcal M\). The agent follows only its projection onto \(E_i(x)\).
+          </p>
+        </div>
+      </div>
+
+      <div class="geometry-viz">
+        <canvas id="geometryCanvas" aria-label="Interactive sphere and chart visualization"></canvas>
+        <div class="viz-overlay">
+          <div class="viz-title">Sphere example · \(U=\{x\in\mathcal S^2:x_3>0\}\)</div>
+          <div class="viz-instruction">Move the pointer over the disk to inspect the corresponding point and actuation directions on the sphere.</div>
+        </div>
+      </div>
+
+      <div class="geometry-facts">
+        <p>\(e_1(x)=x_3\partial_1-x_1\partial_3\)</p>
+        <p>\(e_2(x)=x_3\partial_2-x_2\partial_3\)</p>
+        <p>\(\phi(x)=(x_1,x_2)\in\mathcal D^2\)</p>
+        <p>\([e_1,e_2](x)=x_2\partial_1-x_1\partial_2\neq0\) generically</p>
+      </div>
+    </section>
+
+    <section id="stability" class="section stability-section">
+      <div class="section-label">03 · LOCAL STABILITY</div>
+      <div class="stability-grid">
+        <div class="stability-copy">
+          <h2>The linearization remembers the curvature of the actuation frame.</h2>
+          <p class="lead">
+            At an equilibrium \(x^\star\), stability is governed by the intrinsic Jacobian
+            \(A|_{x^\star}\). Its blocks split into two conceptually different pieces.
+          </p>
+          <div class="stability-result">
+            <p><b>Isolated equilibrium</b> if \(A|_{x^\star}\) is an automorphism.</p>
+            <p><b>Locally exponentially stable</b> iff \(A|_{x^\star}\) is Hurwitz.</p>
+          </div>
+        </div>
+
+        <div class="jacobian-decomp">
+          <div class="jacobian-equation">
+            \[
+            (A_{ij})_{p,q}
+            =
+            \underbrace{\operatorname{Hess}(J_i)[f_{i,p},f_{j,q}]}_{\text{payoff curvature}}
+            +
+            \underbrace{dJ_i[\nabla_{f_{j,q}}f_{i,p}]}_{\text{connection / non-holonomy}}.
+            \tag{20}
+            \]
+          </div>
+          <div class="decomp-bars">
+            <div class="bar hessian"><span>Hessian term</span><small>How the payoff bends.</small></div>
+            <div class="bar connection"><span>Connection term</span><small>How the admissible directions bend.</small></div>
+          </div>
+          <p class="fineprint">
+            The second term has no analogue in ordinary coordinate-wise gradient play and is the geometric signature of a moving, potentially non-commuting frame.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section id="deception" class="deception-section">
+      <div class="section deception-inner">
+        <div class="section-label warm">04 · GEOMETRIC DECEPTION</div>
+        <div class="deception-head">
+          <div>
+            <h2>The deceiver does not alter the victim's payoff.<br>It tilts the directions through which that payoff acts.</h2>
+          </div>
+          <p>
+            With privileged knowledge of the victim's learning signal, agent 1 can produce
+            \[
+            \widetilde e_1=e_1,\qquad
+            \widetilde e_2=e_2+\gamma e_1.
+            \]
+            The victim's projected gradient is therefore biased, and the equilibrium moves.
+          </p>
+        </div>
+
+        <div class="deception-workbench">
+          <div class="deception-canvas-wrap">
+            <canvas id="deceptionCanvas" aria-label="Interactive deception geometry"></canvas>
+            <div class="canvas-label nominal">NOMINAL</div>
+            <div class="canvas-label deceived">DECEIVED</div>
+          </div>
+
+          <aside class="deception-controls">
+            <label for="gammaSlider">Deception parameter</label>
+            <div class="gamma-value"><span>\(\gamma\)</span><output id="gammaValue">0.50</output></div>
+            <input id="gammaSlider" type="range" min="-1.5" max="1.5" step="0.01" value="0.50">
+            <div class="equilibrium-readout">
+              <span>Sphere equilibrium</span>
+              \[
+              X^\star(\gamma)
+              =
+              \left(
+              0,
+              \frac{\gamma}{\sqrt{1+\gamma^2}},
+              \frac{1}{\sqrt{1+\gamma^2}}
+              \right).
+              \tag{29}
+              \]
+            </div>
+            <p>
+              Drag the slider. The nominal direction stays fixed; the victim's effective direction tilts and the stable equilibrium slides along the sphere.
+            </p>
+          </aside>
+        </div>
+
+        <div class="deception-theorem">
+          <div>
+            <span>THEOREM 3</span>
+            <h3>Stable equilibria persist under sufficiently small deception.</h3>
+          </div>
+          <p>
+            If \(x^\star\) is locally exponentially stable for the nominal interaction, then
+            there exists an open neighborhood of deception parameters and a smooth map
+            \(X^\star(\gamma)\) with \(X^\star(0)=x^\star\), such that the shifted equilibrium
+            remains locally exponentially stable.
+          </p>
+        </div>
+
+        <div class="sensitivity">
+          <span>FIRST-ORDER EQUILIBRIUM SHIFT</span>
+          <div>
+            \[
+            \left.
+            \frac{\partial X^\star}{\partial \gamma_j^k}
+            \right|_{\gamma=0}
+            =
+            -dJ_2[f_{1,k}](x^\star)\,
+            (A|_{x^\star})^{-1}f_{2,j}(x^\star).
+            \tag{28}
+            \]
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section examples-section">
+      <div class="section-label">05 · TWO RUNNING EXAMPLES</div>
+      <div class="examples-grid">
+        <article class="example">
+          <div class="example-number">A</div>
+          <h3>Sphere</h3>
+          <p>
+            Two rank-one, non-commuting distributions span the tangent space on the upper hemisphere. For the paper's payoff choice, the nominal equilibrium is \(x^\star=(0,0,1)\).
+          </p>
+          <div class="example-graphic sphere-mini" aria-hidden="true"></div>
         </article>
-        <article class="glass reveal delay-1">
-          <div class="card-index">02</div>
-          <h3>Stability</h3>
-          <p>An intrinsic Jacobian separates Riemannian Hessian terms from connection terms that encode the non-holonomy of the actuation frame.</p>
-          <div class="mini-eq">\(A[X]=\nabla_X \sum_i \mathrm{grad}_{E_i}J_i\)</div>
+        <article class="example">
+          <div class="example-number">B</div>
+          <h3>Simplex</h3>
+          <p>
+            A two-player resource-allocation game on the interior of the 2-simplex. Under deception, the equilibrium displacement is exactly linear in \(\gamma\).
+          </p>
+          <div class="simplex-eq">
+            \[
+            X^\star(\gamma)-X^\star(0)
+            =
+            \frac{\gamma(1-3\alpha)}{3}(1,-2,1).
+            \]
+          </div>
         </article>
-        <article class="glass reveal delay-2">
-          <div class="card-index">03</div>
-          <h3>Deception</h3>
-          <p>Privileged information lets a malicious agent tilt a victim's effective actuation bundle, biasing its projected gradient and shifting equilibrium.</p>
-          <div class="mini-eq">\(\widetilde E_2 \neq E_2\)</div>
-        </article>
       </div>
     </section>
 
-    <section id="geometry" class="section split-section">
-      <div class="split-copy reveal">
-        <div class="kicker">NON-HOLONOMIC GRADIENT PLAY</div>
-        <h2>What an agent <em>wants</em> and what it can <em>do</em> are different objects.</h2>
-        <p>The payoff gradient lives in the tangent space. Actuation restricts each agent to a distribution \(E_i\). The effective strategic motion is the Riemannian gradient projected onto that admissible distribution.</p>
-        <div class="formula-stack">
-          <div><span>Control-affine interaction</span><b>\(\dot x=\sum_{i,j} u_{i,j} f_{i,j}(x)\)</b></div>
-          <div><span>Payoff ascent along actuation</span><b>\(u_{i,j}=\kappa_i\,\mathcal L_{f_{i,j}}J_i\)</b></div>
-          <div class="accent-formula"><span>Intrinsic target dynamics</span><b>\(\dot x=\sum_i \kappa_i\,\mathrm{grad}_{E_i}J_i(x)\)</b></div>
+    <section class="section model-free-section">
+      <div class="section-label">06 · MODEL-FREE CONNECTION</div>
+      <div class="model-free-grid">
+        <div>
+          <h2>The same geometry is the target behavior of payoff-only learning.</h2>
+          <p class="lead">
+            Lie-bracket-based feedback laws can use measurements of \(J_i\) only and approximate
+            the non-holonomic gradient-play dynamics at high probing frequencies.
+          </p>
         </div>
-      </div>
-      <div class="visual-card mapping-card reveal delay-1">
-        <div class="visual-head">
-          <span>Sphere example: manifold → chart</span>
-          <span class="live">● INTERACTIVE</span>
-        </div>
-
-        <div class="mapping-stage">
-          <div class="mapping-panel">
-            <div class="mapping-panel-label">1 · State on the manifold \(\mathcal{S}^2\)</div>
-            <canvas id="sphere3DCanvas" aria-label="Upper hemisphere with local actuation directions"></canvas>
-          </div>
-
-          <div class="mapping-arrow" aria-hidden="true">
-            <span>\(\phi\)</span>
-            <b>→</b>
-            <small>\(\phi(x)=(x_1,x_2)\)</small>
-          </div>
-
-          <div class="mapping-panel">
-            <div class="mapping-panel-label">2 · Coordinates on the open disk \(\mathcal{D}^2\)</div>
-            <canvas id="sphereCanvas" aria-label="Interactive chart of the upper hemisphere"></canvas>
-          </div>
-        </div>
-
-        <div class="visual-foot mapping-foot">
-          <span>Move the pointer over the disk.</span>
-          The selected chart point \(\xi=(x_1,x_2)\) is lifted to
-          \(x=(x_1,x_2,\sqrt{1-x_1^2-x_2^2})\in\mathcal{S}^2\).
-          The cyan and magenta arrows show the corresponding local directions
-          \(e_1\) and \(e_2\) in both representations.
-        </div>
-      </div>
-    </section>
-
-    <section class="section theorem-band" id="results">
-      <div class="kicker reveal">LOCAL STABILITY</div>
-      <div class="theorem-grid">
-        <div class="theorem-copy reveal">
-          <h2>Curvature enters the game.</h2>
-          <p>At equilibrium, stability is governed by the intrinsic Jacobian. Its blocks contain both Hessian information and a connection term induced by the geometry of the moving frame.</p>
-          <div class="big-equation">\[ (A_{ij})_{p,q}=\mathrm{Hess}(J_i)[f_{i,p},f_{j,q}] + dJ_i[\nabla_{f_{j,q}}f_{i,p}] \]</div>
-        </div>
-        <div class="result-list reveal delay-1">
-          <div><strong>Isolated equilibrium</strong><span>when \(A|_{x^\star}\) is an automorphism.</span></div>
-          <div><strong>Local exponential stability</strong><span>iff \(A|_{x^\star}\) is Hurwitz.</span></div>
-          <div><strong>Flat Euclidean play</strong><span>is recovered when the relevant frame is holonomic.</span></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="deception" class="section deception-section">
-      <div class="kicker reveal">GEOMETRIC DECEPTION</div>
-      <h2 class="section-title reveal">The attacker never touches the victim.<br>It tilts the geometry the victim sees.</h2>
-      <p class="lead reveal">With privileged access to the victim's learning signal, the deceiver embeds that signal into its own input. In the averaged dynamics, this is equivalent to replacing the victim's actuation directions by tilted directions.</p>
-
-      <div class="deception-demo reveal">
-        <div class="demo-stage">
-          <canvas id="deceptionCanvas"></canvas>
-          <div class="legend"><span><i class="line cyan"></i> nominal \(e_2\)</span><span><i class="line pink"></i> tilted \(\tilde e_2=e_2+\gamma e_1\)</span><span><i class="point"></i> shifted equilibrium</span></div>
-        </div>
-        <div class="demo-panel">
-          <div class="panel-label">DECEPTION PARAMETER</div>
-          <div class="gamma-row"><span>γ</span><output id="gammaValue">0.50</output></div>
-          <input id="gammaSlider" type="range" min="-1.5" max="1.5" value="0.5" step="0.01" />
-          <div class="eq-card">
-            <span>Sphere example equilibrium</span>
-            <div>\[X^\star(\gamma)=\left(0,\frac{\gamma}{\sqrt{1+\gamma^2}},\frac{1}{\sqrt{1+\gamma^2}}\right)\]</div>
-          </div>
-          <p>Drag the slider. The victim's direction tilts, while the stable equilibrium slides along the manifold.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section theorem-highlight">
-      <div class="highlight-number">THEOREM 3</div>
-      <div class="highlight-body">
-        <h2>Stable equilibria persist under small deception.</h2>
-        <p>If the nominal equilibrium \(x^\star\) is locally exponentially stable, then there is an open neighborhood of deception parameters and a smooth equilibrium map \(X^\star(\gamma)\) with \(X^\star(0)=x^\star\). The shifted equilibrium remains locally exponentially stable.</p>
-      </div>
-      <div class="highlight-aside">
-        <span>First-order shift</span>
-        <div>\[\left.\frac{\partial X^\star}{\partial \gamma^k_j}\right|_{\gamma=0}=-dJ_2[f_{1,k}](x^\star)\,(A|_{x^\star})^{-1}f_{2,j}(x^\star)\]</div>
-      </div>
-    </section>
-
-    <section class="section split-section reverse">
-      <div class="visual-card reveal">
-        <div class="visual-head"><span>Simplex example</span><span class="live">● INTERACTIVE</span></div>
-        <canvas id="simplexCanvas"></canvas>
-        <div class="visual-foot">Resource-allocation game with \(\alpha=4/9\). The nominal and deceptive equilibria are shown inside the simplex.</div>
-      </div>
-      <div class="split-copy reveal delay-1">
-        <div class="kicker">EQUILIBRIUM MANIPULATION</div>
-        <h2>Deception produces a controlled equilibrium displacement.</h2>
-        <p>For the simplex example, the equilibrium shift is exactly linear in \(\gamma\). The geometry makes the manipulation visible: one agent's privileged information changes the destination without destroying stability on the admissible parameter interval.</p>
-        <label class="compact-slider">γ <output id="simplexGammaValue">0.50</output>
-          <input id="simplexGammaSlider" type="range" min="-0.9" max="1.8" value="0.5" step="0.01" />
-        </label>
-        <div class="mini-eq">\(X^\star(\gamma)-X^\star(0)=\frac{\gamma(1-3\alpha)}{3}(1,-2,1)\)</div>
-      </div>
-    </section>
-
-    <section class="section model-free">
-      <div class="kicker reveal">MODEL-FREE CONNECTION</div>
-      <h2 class="section-title reveal">The theory also describes the target behavior of payoff-only learning.</h2>
-      <div class="flowline reveal">
-        <div><span>1</span><strong>Payoff measurements</strong><small>No analytical gradient required.</small></div>
-        <i>→</i>
-        <div><span>2</span><strong>Oscillatory feedback</strong><small>Distinct probing channels excite admissible directions.</small></div>
-        <i>→</i>
-        <div><span>3</span><strong>Lie-bracket averaging</strong><small>Fast excitation generates an averaged vector field.</small></div>
-        <i>→</i>
-        <div><span>4</span><strong>Non-holonomic gradient play</strong><small>The intrinsic dynamics analyzed in the paper.</small></div>
+        <ol class="process">
+          <li><span>01</span><div><b>Measure payoff</b><small>No analytic gradient.</small></div></li>
+          <li><span>02</span><div><b>Inject oscillatory probes</b><small>Along admissible vector fields.</small></div></li>
+          <li><span>03</span><div><b>Average Lie brackets</b><small>Recover the target drift.</small></div></li>
+          <li><span>04</span><div><b>Analyze intrinsic gradient play</b><small>Geometry, stability, deception.</small></div></li>
+        </ol>
       </div>
     </section>
 
     <section id="paper" class="section paper-section">
-      <div class="paper-top reveal">
+      <div class="paper-heading">
         <div>
-          <div class="kicker">PAPER</div>
+          <div class="section-label">PAPER</div>
           <h2>Non-Holonomic Gradient Play:<br>Stability and Deception in Games on Manifolds</h2>
-          <p>Mahmoud Abdelgalil, Miroslav Krstic, and Jorge I. Poveda</p>
+          <p>Mahmoud Abdelgalil · Miroslav Krstic · Jorge I. Poveda</p>
         </div>
-        <a class="pill" href="assets/paper.pdf" target="_blank">Open PDF ↗</a>
+        <a class="button primary" href="assets/paper.pdf" target="_blank" rel="noreferrer">Open PDF ↗</a>
       </div>
-      <div class="abstract-grid reveal">
-        <div class="abstract-copy">
+
+      <div class="paper-bottom">
+        <div class="abstract">
           <h3>Abstract</h3>
-          <p>We study generalized equilibrium seeking in multi-agent systems whose joint state evolves on a manifold and whose agents act through state-dependent, potentially non-holonomic control vector fields. The framework provides an intrinsic projected-gradient representation, local stability conditions that expose connection terms, and a geometric theory of deception in which privileged information tilts a victim's effective actuation directions and shifts equilibrium.</p>
+          <p>
+            We study generalized equilibrium seeking in multi-agent systems whose joint state
+            evolves on a manifold and whose agents act through state-dependent, potentially
+            non-holonomic control vector fields. The framework gives an intrinsic projected-gradient
+            representation, a local stability characterization that exposes connection terms,
+            and a geometric theory of deception under asymmetric algorithmic information.
+          </p>
         </div>
-        <div class="citation-card">
-          <div class="citation-head"><span>BibTeX</span><button id="copyBib">Copy</button></div>
-          <pre id="bibtex">@article{Abdelgalil2026NonHolonomic,
-  title   = {Non-Holonomic Gradient Play: Stability and
-             Deception in Games on Manifolds},
-  author  = {Abdelgalil, Mahmoud and Krstic, Miroslav
-             and Poveda, Jorge I.},
+        <div class="bib">
+          <div class="bib-head">
+            <span>BibTeX</span>
+            <button id="copyBib" type="button">Copy</button>
+          </div>
+          <pre id="bibtex">@article{AbdelgalilKrsticPoveda2026NHGP,
+  title   = {Non-Holonomic Gradient Play: Stability and Deception in Games on Manifolds},
+  author  = {Abdelgalil, Mahmoud and Krstic, Miroslav and Poveda, Jorge I.},
   journal = {IEEE Transactions on Automatic Control},
   year    = {2026}
 }</pre>
         </div>
       </div>
-    </section>
 
-    <section class="section authors-section">
-      <div class="kicker reveal">AUTHORS</div>
-      <div class="author-grid">
-        <article class="author reveal"><img src="assets/mahmoud.png" alt="Mahmoud Abdelgalil"><div><h3>Mahmoud Abdelgalil</h3><p>University at Buffalo</p></div></article>
-        <article class="author reveal delay-1"><img src="assets/miroslav.png" alt="Miroslav Krstic"><div><h3>Miroslav Krstic</h3><p>UC San Diego</p></div></article>
-        <article class="author reveal delay-2"><img src="assets/jorge.png" alt="Jorge I. Poveda"><div><h3>Jorge I. Poveda</h3><p>UC San Diego</p></div></article>
+      <div class="author-row">
+        <article>
+          <img src="assets/mahmoud.png" alt="Mahmoud Abdelgalil">
+          <div><b>Mahmoud Abdelgalil</b><span>University at Buffalo</span></div>
+        </article>
+        <article>
+          <img src="assets/miroslav.png" alt="Miroslav Krstic">
+          <div><b>Miroslav Krstic</b><span>UC San Diego</span></div>
+        </article>
+        <article>
+          <img src="assets/jorge.png" alt="Jorge I. Poveda">
+          <div><b>Jorge I. Poveda</b><span>UC San Diego</span></div>
+        </article>
       </div>
     </section>
   </main>
 
   <footer>
     <span>Non-Holonomic Gradient Play</span>
-    <span>Interactive project page · 2026</span>
+    <span>Interactive project page</span>
   </footer>
+
   <script src="script.js"></script>
 </body>
 </html>
