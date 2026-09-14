@@ -35,11 +35,12 @@
     <section class="hero">
       <canvas id="heroCanvas" aria-hidden="true"></canvas>
       <div class="hero-copy">
-        <p class="overline">GAMES ON MANIFOLDS · RESTRICTED ACTUATION · DECEPTION</p>
+        <p class="overline">INTERACTIVE PAPER</p>
         <h1>Non-Holonomic<br><span>Gradient Play</span></h1>
         <p class="subtitle">Stability and Deception in Games on Manifolds</p>
         <p class="authors">Mahmoud Abdelgalil <b>·</b> Miroslav Krstic <b>·</b> Jorge I. Poveda</p>
         <p class="affiliation">University at Buffalo · University of California San Diego</p>
+        <p class="hero-abstract">We study generalized equilibrium seeking in multi-agent systems whose joint state evolves on a manifold and whose agents act through state-dependent, potentially non-holonomic control vector fields. Under a bundle-splitting condition, we show that the averaged interaction dynamics admit an intrinsic representation as a sum of projected Riemannian gradients, giving rise to a form of non-holonomic gradient play. We characterize the local stability of equilibria through an intrinsic linearization that explicitly captures the roles of the Riemannian connection and the non-holonomy of the actuation frame. We then develop a geometric theory of deception, in which a malicious agent exploits privileged information about other agents’ learning rules to shift the equilibrium of the interaction. We show that deception effectively tilts the Riemannian geometry perceived by the victim agents, thereby distorting their projected gradient directions. Exponential stability persists over an open set of deception parameters, and the resulting equilibrium displacement admits an explicit first-order characterization.</p>
         <div class="hero-actions">
           <a class="button primary" href="assets/paper.pdf" target="_blank" rel="noreferrer">Read the paper</a>
           <a class="button secondary" href="#deception">See geometric deception ↓</a>
@@ -305,6 +306,28 @@
             Lie-bracket-based feedback laws can use measurements of \(J_i\) only and approximate
             the non-holonomic gradient-play dynamics at high probing frequencies.
           </p>
+          <div class="model-free-equation">
+            <span>PAYOFF-ONLY IMPLEMENTATION · EQ. (4)</span>
+            \[
+            \begin{aligned}
+            u_{i,j}(x,t)
+            &=
+            \sqrt{4\pi\kappa_i\omega_{i,j}\omega}\,
+            \cos(2\pi\omega_{i,j}\omega t)\,
+            F^{1}_{i,j}\!\left(J_i(x)\right)
+            \\
+            &\quad-
+            \sqrt{4\pi\kappa_i\omega_{i,j}\omega}\,
+            \sin(2\pi\omega_{i,j}\omega t)\,
+            F^{2}_{i,j}\!\left(J_i(x)\right).
+            \end{aligned}
+            \tag{4}
+            \]
+            <p>
+              Only measurements of \(J_i(x)\) are required. As \(\omega\to\infty\), the associated
+              Lie-bracket approximation coincides with the non-holonomic gradient-play dynamics in (3).
+            </p>
+          </div>
         </div>
         <ol class="process">
           <li><span>01</span><div><b>Measure payoff</b><small>No analytic gradient.</small></div></li>
@@ -325,17 +348,7 @@
         <a class="button primary" href="assets/paper.pdf" target="_blank" rel="noreferrer">Open PDF ↗</a>
       </div>
 
-      <div class="paper-bottom">
-        <div class="abstract">
-          <h3>Abstract</h3>
-          <p>
-            We study generalized equilibrium seeking in multi-agent systems whose joint state
-            evolves on a manifold and whose agents act through state-dependent, potentially
-            non-holonomic control vector fields. The framework gives an intrinsic projected-gradient
-            representation, a local stability characterization that exposes connection terms,
-            and a geometric theory of deception under asymmetric algorithmic information.
-          </p>
-        </div>
+      <div class="paper-bottom paper-bottom-single">
         <div class="bib">
           <div class="bib-head">
             <span>BibTeX</span>

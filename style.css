@@ -62,8 +62,8 @@ mjx-container{overflow-x:auto;overflow-y:hidden}
 
 .hero{
   position:relative;
-  min-height:740px;
-  height:min(830px,100vh);
+  min-height:900px;
+  height:auto;
   overflow:hidden;
   border-bottom:1px solid var(--line);
 }
@@ -81,7 +81,7 @@ mjx-container{overflow-x:auto;overflow-y:hidden}
   position:relative;z-index:2;
   width:min(92vw,var(--max));
   margin:0 auto;
-  padding-top:145px;
+  padding-top:138px;
 }
 .overline,.section-label{
   color:var(--sage);
@@ -551,4 +551,98 @@ footer{
   .deception-intro{grid-template-rows:auto 150px}
   .mini-figure{height:160px}
   .stability-visual{height:180px}
+}
+
+
+/* Hero abstract */
+.hero-abstract{
+  max-width:860px;
+  margin:24px 0 0;
+  color:#a9b0ad;
+  font-size:13.5px;
+  line-height:1.72;
+  letter-spacing:-.005em;
+}
+
+/* Slightly larger displayed equations site-wide */
+.equation-main{font-size:clamp(19px,1.85vw,28px);}
+.jacobian-equation{font-size:clamp(18px,1.62vw,25px);}
+.sensitivity>div{font-size:clamp(16px,1.42vw,22px);}
+.simplex-eq{font-size:18px;}
+.simplex-eq.compact{font-size:16px;}
+.core-equation, .model-free-equation{font-size:clamp(18px,1.55vw,24px);}
+.geometry-head .lead mjx-container[display="true"]{font-size:1.12em!important;}
+.deception-head mjx-container[display="true"],
+.equilibrium-readout mjx-container[display="true"]{font-size:1.10em!important;}
+
+/* Model-free implementation equation */
+.model-free-equation{
+  margin-top:32px;
+  padding:22px 24px;
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+  background:linear-gradient(90deg,rgba(159,199,181,.045),transparent 65%);
+  color:#e3e6e1;
+}
+.model-free-equation>span{
+  display:block;
+  margin-bottom:12px;
+  color:var(--sage);
+  font:500 9px var(--mono);
+  letter-spacing:.15em;
+}
+.model-free-equation>p{
+  margin:12px 0 0;
+  max-width:720px;
+  color:#8e9895;
+  font-size:12px;
+  line-height:1.6;
+}
+
+/* Paper footer: abstract moved to the hero */
+.paper-bottom.paper-bottom-single{
+  grid-template-columns:1fr;
+  max-width:900px;
+}
+
+/* Author portraits: larger and full color */
+.author-row article{
+  min-height:132px;
+  padding-top:28px;
+  padding-bottom:28px;
+}
+.author-row img{
+  width:88px;
+  height:88px;
+  object-fit:cover;
+  object-position:center;
+  border-radius:50%;
+  filter:none;
+  flex:0 0 88px;
+  border:1px solid rgba(255,255,255,.12);
+}
+.author-row b{
+  font-size:14px;
+  margin-bottom:6px;
+}
+.author-row span{
+  font-size:12px;
+}
+
+@media(max-width:720px){
+  .hero-abstract{
+    max-width:none;
+    font-size:12.5px;
+    line-height:1.65;
+    margin-top:20px;
+  }
+  .author-row img{
+    width:74px;
+    height:74px;
+    flex-basis:74px;
+  }
+  .model-free-equation{
+    padding:18px 14px;
+    overflow-x:auto;
+  }
 }

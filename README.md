@@ -50,3 +50,11 @@ The sphere and simplex panels now contain live canvas animations. The sphere ani
 - Added compact scientific animations to the main-object, stability, and deception-introduction sections.
 - Reduced oversized vertical gaps and section padding to create a denser editorial flow.
 - Brought the geometry visualization closer to its explanatory text.
+
+
+## September 14 update
+1. Hero label changed to “INTERACTIVE PAPER”.
+2. Paper abstract moved directly below the authors/affiliation in the opening section, with no “Abstract” heading.
+3. Display equations enlarged slightly throughout the site.
+4. Section 06 now includes the payoff-only model-free implementation, Eq. (4), from Remark 1.
+5. Author portraits are larger and displayed in full color.
