@@ -41,13 +41,9 @@ function drawHero(){
   requestAnimationFrame(drawHero);
 } drawHero();
 
-// Sphere example: upper hemisphere -> disk chart, with linked interaction.
-const sphere = document.getElementById('sphereCanvas');
-const sctx = sphere.getContext('2d');
-const sphere3D = document.getElementById('sphere3DCanvas');
-const s3ctx = sphere3D.getContext('2d');
-
-let mouse={x:.5,y:.5,active:true};
+// Sphere projected to disk — interactive local actuation directions
+const sphere=document.getElementById('sphereCanvas'), sctx=sphere.getContext('2d');
+let mouse={x:.5,y:.5,active:false};
 
 function updateSpherePointer(e){
   const r=sphere.getBoundingClientRect();
@@ -60,212 +56,64 @@ function updateSpherePointer(e){
 sphere.addEventListener('pointermove',updateSpherePointer);
 sphere.addEventListener('pointerdown',updateSpherePointer);
 sphere.addEventListener('pointerenter',updateSpherePointer);
+sphere.addEventListener('pointerleave',()=>{mouse.active=false;});
 
-function chartPointFromMouse(w,h){
-  const cx=w/2,cy=h/2,R=Math.min(w,h)*.37;
-  let X=(mouse.x*w-cx)/R;
-  let Y=-(mouse.y*h-cy)/R;
-  const rr=Math.hypot(X,Y);
-  // Clamp to the open disk so the point always has a valid lift.
-  if(rr>.965){X*=.965/rr;Y*=.965/rr;}
-  const Z=Math.sqrt(Math.max(0,1-X*X-Y*Y));
-  return {X,Y,Z,cx,cy,R,px:cx+X*R,py:cy-Y*R};
-}
-
-function drawDiskField(ctx,w,h,tilt=0,eqY=null,selected=null){
-  const cx=w/2,cy=h/2,R=Math.min(w,h)*.37;
-  ctx.save();
-
-  const g=ctx.createRadialGradient(cx-R*.24,cy-R*.28,R*.05,cx,cy,R);
-  g.addColorStop(0,'#163349');
-  g.addColorStop(.65,'#0b1824');
-  g.addColorStop(1,'#071018');
-  ctx.fillStyle=g;
-  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fill();
-
-  // Coordinate grid: this is explicitly a chart of the upper hemisphere.
-  ctx.strokeStyle='rgba(255,255,255,.075)';
-  ctx.lineWidth=.8*DPR;
-  for(let k=-3;k<=3;k++){
-    const q=k/4;
-    const lim=Math.sqrt(Math.max(0,1-q*q));
-    ctx.beginPath();
-    ctx.moveTo(cx+q*R,cy-lim*R);
-    ctx.lineTo(cx+q*R,cy+lim*R);
-    ctx.stroke();
-    ctx.beginPath();
-    ctx.moveTo(cx-lim*R,cy-q*R);
-    ctx.lineTo(cx+lim*R,cy-q*R);
-    ctx.stroke();
-  }
-
-  ctx.strokeStyle='#6de5ff70';
-  ctx.lineWidth=1.1*DPR;
-  ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.stroke();
-
-  const N=10;
+function drawDiskField(ctx,w,h,tilt=0,eqY=null){
+  const cx=w/2,cy=h/2,R=Math.min(w,h)*.38; ctx.save();
+  const g=ctx.createRadialGradient(cx-R*.25,cy-R*.35,R*.05,cx,cy,R);g.addColorStop(0,'#173046');g.addColorStop(1,'#081019');ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,R,0,Math.PI*2);ctx.fill();
+  ctx.strokeStyle='#6de5ff55';ctx.lineWidth=1*DPR;ctx.stroke();
+  const N=13;
   for(let iy=-N;iy<=N;iy++)for(let ix=-N;ix<=N;ix++){
-    const X=ix/N,Y=iy/N;
-    if(X*X+Y*Y>.90)continue;
-    const z=Math.sqrt(Math.max(0,1-X*X-Y*Y));
-
-    // In chart coordinates phi(x)=(x1,x2):
-    // e1=(z,0,-x1) -> Dphi e1=(z,0)
-    // e2=(0,z,-x2) -> Dphi e2=(0,z)
-    const x=cx+X*R,y=cy-Y*R;
-    const scale=(.55+.5*z)*DPR;
-    arrow(ctx,x,y,z*15*scale,0,'#6de5ff',.34,.75);
-    arrow(ctx,x,y,tilt*z*13*scale,-z*15*scale,'#ff6aa9',tilt===0?.18:.48,.75);
+    const X=ix/N,Y=iy/N;if(X*X+Y*Y>.92)continue; const z=Math.sqrt(Math.max(0,1-X*X-Y*Y));
+    // projected versions of e1=(z,0,-x), e2=(0,z,-y); tilt e2 by gamma e1
+    const x=cx+X*R,y=cy-Y*R; const scale=(.6+.55*z)*DPR;
+    arrow(ctx,x,y,z*18*scale,0,'#6de5ff',.42,.8);
+    arrow(ctx,x,y,tilt*z*15*scale,-z*18*scale,'#ff6aa9',tilt===0?.20:.58,.8);
   }
-
-  if(eqY!==null){
-    const x=cx,y=cy-eqY*R;
-    ctx.shadowColor='#6de5ff';
-    ctx.shadowBlur=18*DPR;
-    ctx.fillStyle='white';
-    ctx.beginPath();ctx.arc(x,y,5.2*DPR,0,Math.PI*2);ctx.fill();
-    ctx.shadowBlur=0;
-  }
-
-  if(selected){
-    const {X,Y,Z,px,py}=selected;
-    ctx.shadowColor='rgba(255,255,255,.55)';
-    ctx.shadowBlur=11*DPR;
-    ctx.fillStyle='#fff';
-    ctx.beginPath();ctx.arc(px,py,4.5*DPR,0,Math.PI*2);ctx.fill();
-    ctx.shadowBlur=0;
-
-    const mag=(31+27*Z)*DPR;
-    arrow(ctx,px,py, mag,0,'#6de5ff',1,2.15);
-    arrow(ctx,px,py, 0,-mag,'#ff6aa9',1,2.15);
-
-    ctx.font=`${11*DPR}px system-ui, sans-serif`;
-    ctx.fillStyle='#a5f2ff';ctx.fillText('Dφ·e₁',px+mag+5*DPR,py-4*DPR);
-    ctx.fillStyle='#ff9bc8';ctx.fillText('Dφ·e₂',px+6*DPR,py-mag-6*DPR);
-
-    const bx=13*DPR, by=15*DPR, bw=190*DPR, bh=61*DPR;
-    ctx.fillStyle='rgba(5,10,16,.84)';
-    ctx.strokeStyle='rgba(255,255,255,.12)';
-    ctx.lineWidth=1*DPR;
-    ctx.beginPath();ctx.roundRect(bx,by,bw,bh,9*DPR);ctx.fill();ctx.stroke();
-    ctx.font=`${10.2*DPR}px ui-monospace, SFMono-Regular, Menlo, monospace`;
-    ctx.fillStyle='#dce8f2';
-    ctx.fillText(`ξ = (${X.toFixed(2)}, ${Y.toFixed(2)})`,bx+10*DPR,by+19*DPR);
-    ctx.fillStyle='#8fa0b1';
-    ctx.fillText(`x₃ = √(1-‖ξ‖²) = ${Z.toFixed(2)}`,bx+10*DPR,by+38*DPR);
-    ctx.fillText(`x = (${X.toFixed(2)}, ${Y.toFixed(2)}, ${Z.toFixed(2)})`,bx+10*DPR,by+55*DPR);
-  }
-
+  if(eqY!==null){const X=0,Y=eqY;const x=cx+X*R,y=cy-Y*R;ctx.shadowColor='#6de5ff';ctx.shadowBlur=18*DPR;ctx.fillStyle='white';ctx.beginPath();ctx.arc(x,y,5.2*DPR,0,Math.PI*2);ctx.fill();ctx.shadowBlur=0;}
   ctx.restore();
 }
 
-function project3(v,w,h){
-  // Fixed camera: yaw + pitch, then orthographic projection.
-  const yaw=-0.72, pitch=0.48;
-  const cy=Math.cos(yaw),sy=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch);
-  const x1=cy*v.x+sy*v.z;
-  const z1=-sy*v.x+cy*v.z;
-  const y2=cp*v.y-sp*z1;
-  const z2=sp*v.y+cp*z1;
-  const S=Math.min(w,h)*.34;
-  return {x:w*.50+x1*S,y:h*.55-y2*S,z:z2,S};
-}
-function projectVecAt(p,v,w,h){
-  const a=project3(p,w,h);
-  const eps=.17;
-  const b=project3({x:p.x+eps*v.x,y:p.y+eps*v.y,z:p.z+eps*v.z},w,h);
-  return {dx:(b.x-a.x)/eps,dy:(b.y-a.y)/eps};
-}
-function drawSphereManifold(ctx,w,h,sel){
-  ctx.clearRect(0,0,w,h);
-
-  // Soft sphere body.
-  const C=project3({x:0,y:0,z:0},w,h);
-  const R=Math.min(w,h)*.34;
-  const grad=ctx.createRadialGradient(C.x-R*.28,C.y-R*.33,R*.08,C.x,C.y,R);
-  grad.addColorStop(0,'#244960');
-  grad.addColorStop(.6,'#102333');
-  grad.addColorStop(1,'#071018');
-  ctx.fillStyle=grad;
-  ctx.beginPath();ctx.arc(C.x,C.y,R,0,Math.PI*2);ctx.fill();
-
-  // Upper-hemisphere latitude circles and meridians.
-  ctx.lineWidth=.75*DPR;
-  ctx.strokeStyle='rgba(109,229,255,.22)';
-  for(let z=.18;z<=.9;z+=.18){
-    const rr=Math.sqrt(1-z*z);
-    ctx.beginPath();
-    for(let k=0;k<=100;k++){
-      const a=2*Math.PI*k/100;
-      const p=project3({x:rr*Math.cos(a),y:rr*Math.sin(a),z:z},w,h);
-      k?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y);
-    }
-    ctx.stroke();
-  }
-  ctx.strokeStyle='rgba(255,255,255,.11)';
-  for(let m=0;m<10;m++){
-    const a=2*Math.PI*m/10;
-    ctx.beginPath();
-    for(let k=0;k<=70;k++){
-      const th=(Math.PI/2)*k/70;
-      const p=project3({x:Math.sin(th)*Math.cos(a),y:Math.sin(th)*Math.sin(a),z:Math.cos(th)},w,h);
-      k?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y);
-    }
-    ctx.stroke();
-  }
-
-  // Equator / chart boundary.
-  ctx.strokeStyle='rgba(109,229,255,.55)';
-  ctx.lineWidth=1.1*DPR;
-  ctx.beginPath();
-  for(let k=0;k<=120;k++){
-    const a=2*Math.PI*k/120;
-    const p=project3({x:Math.cos(a),y:Math.sin(a),z:0},w,h);
-    k?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y);
-  }
-  ctx.stroke();
-
-  // Selected state and the actual tangent vector fields from Example 1.
-  const p3={x:sel.X,y:sel.Y,z:sel.Z};
-  const P=project3(p3,w,h);
-  ctx.shadowColor='rgba(255,255,255,.6)';
-  ctx.shadowBlur=12*DPR;
-  ctx.fillStyle='#fff';
-  ctx.beginPath();ctx.arc(P.x,P.y,4.8*DPR,0,Math.PI*2);ctx.fill();
-  ctx.shadowBlur=0;
-
-  // e1=(x3,0,-x1), e2=(0,x3,-x2)
-  const e1={x:sel.Z,y:0,z:-sel.X};
-  const e2={x:0,y:sel.Z,z:-sel.Y};
-  const v1=projectVecAt(p3,e1,w,h), v2=projectVecAt(p3,e2,w,h);
-  const gain=.55;
-  arrow(ctx,P.x,P.y,v1.dx*gain,v1.dy*gain,'#6de5ff',1,2.35);
-  arrow(ctx,P.x,P.y,v2.dx*gain,v2.dy*gain,'#ff6aa9',1,2.35);
-
-  ctx.font=`${11*DPR}px system-ui, sans-serif`;
-  ctx.fillStyle='#a5f2ff';ctx.fillText('e₁',P.x+v1.dx*gain*.55+7*DPR,P.y+v1.dy*gain*.55);
-  ctx.fillStyle='#ff9bc8';ctx.fillText('e₂',P.x+v2.dx*gain*.55+7*DPR,P.y+v2.dy*gain*.55);
-
-  // Explain the manifold state.
-  const bx=12*DPR,by=15*DPR,bw=195*DPR,bh=56*DPR;
-  ctx.fillStyle='rgba(5,10,16,.84)';
-  ctx.strokeStyle='rgba(255,255,255,.12)';
-  ctx.beginPath();ctx.roundRect(bx,by,bw,bh,9*DPR);ctx.fill();ctx.stroke();
-  ctx.font=`${10.2*DPR}px ui-monospace, SFMono-Regular, Menlo, monospace`;
-  ctx.fillStyle='#dce8f2';
-  ctx.fillText(`x = (${sel.X.toFixed(2)}, ${sel.Y.toFixed(2)}, ${sel.Z.toFixed(2)})`,bx+10*DPR,by+20*DPR);
-  ctx.fillStyle='#8fa0b1';
-  ctx.fillText('x ∈ S²,  x₃ > 0',bx+10*DPR,by+40*DPR);
-}
-
 function drawSphere(){
-  const sw=fitCanvas(sphere);
-  const s3w=fitCanvas(sphere3D);
+  const {w,h}=fitCanvas(sphere); sctx.clearRect(0,0,w,h); drawDiskField(sctx,w,h,0,null);
+  const cx=w/2,cy=h/2,R=Math.min(w,h)*.38;
+  const X=(mouse.x-.5)*2/.76;  // map canvas pointer to disk coordinates
+  const Y=-(mouse.y-.5)*2/.76;
+  const r2=X*X+Y*Y;
 
-  const selected=chartPointFromMouse(sw.w,sw.h);
-  drawDiskField(sctx,sw.w,sw.h,0,null,selected);
-  drawSphereManifold(s3ctx,s3w.w,s3w.h,selected);
+  if(mouse.active && r2<1){
+    const z=Math.sqrt(Math.max(0,1-r2));
+    const px=cx+X*R, py=cy-Y*R;
 
+    // pointer location
+    sctx.save();
+    sctx.shadowColor='rgba(255,255,255,.65)'; sctx.shadowBlur=12*DPR;
+    sctx.fillStyle='#ffffff'; sctx.beginPath(); sctx.arc(px,py,4.2*DPR,0,Math.PI*2); sctx.fill();
+    sctx.shadowBlur=0;
+
+    // local admissible directions e1 and e2, exaggerated for readability
+    const mag=(34+34*z)*DPR;
+    arrow(sctx,px,py, mag,0,'#6de5ff',1,2.2);
+    arrow(sctx,px,py, 0,-mag,'#ff6aa9',1,2.2);
+
+    // labels attached to the local directions
+    sctx.font=`${12*DPR}px system-ui, sans-serif`;
+    sctx.fillStyle='#9df1ff'; sctx.fillText('e₁',px+mag+7*DPR,py-5*DPR);
+    sctx.fillStyle='#ff9ac7'; sctx.fillText('e₂',px+7*DPR,py-mag-7*DPR);
+
+    // local coordinate readout
+    const bx=18*DPR, by=24*DPR;
+    sctx.fillStyle='rgba(5,10,16,.80)';
+    sctx.strokeStyle='rgba(255,255,255,.12)';
+    sctx.lineWidth=1*DPR;
+    sctx.beginPath(); sctx.roundRect(bx,by,198*DPR,48*DPR,9*DPR); sctx.fill(); sctx.stroke();
+    sctx.fillStyle='rgba(220,232,243,.92)';
+    sctx.font=`${11*DPR}px ui-monospace, SFMono-Regular, Menlo, monospace`;
+    sctx.fillText(`x = (${X.toFixed(2)}, ${Y.toFixed(2)}, ${z.toFixed(2)})`,bx+12*DPR,by+20*DPR);
+    sctx.fillStyle='rgba(150,166,182,.9)';
+    sctx.fillText('local admissible directions',bx+12*DPR,by+38*DPR);
+    sctx.restore();
+  }
   requestAnimationFrame(drawSphere);
 }
 drawSphere();
