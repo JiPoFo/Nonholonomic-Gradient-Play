@@ -17,3 +17,6 @@ Then open `http://localhost:8000`.
 4. GitHub Pages will publish the site.
 
 The site is plain HTML/CSS/JavaScript and requires no build step. MathJax is loaded from a CDN.
+
+
+Latest update: the sphere example now explicitly shows the upper hemisphere, the chart map phi(x)=(x1,x2), and linked interactive actuation directions. Equation (3) is displayed directly below the hero as the main object of study.
