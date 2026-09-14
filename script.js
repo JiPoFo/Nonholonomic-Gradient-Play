@@ -16,18 +16,27 @@ let heroT=0;
 function drawHero(){
   const {w,h}=fitCanvas(hero); hctx.clearRect(0,0,w,h); heroT+=.004;
   const cx=w*.73,cy=h*.48, sx=Math.min(w,h)*.34, sy=sx*.62;
-  hctx.lineWidth=.7*DPR;
+  hctx.lineWidth=.9*DPR;
   for(let ring=0;ring<18;ring++){
     const rr=.15+ring*.047; hctx.beginPath();
     for(let i=0;i<=180;i++){
       const a=i/180*Math.PI*2; const warp=1+.13*Math.sin(3*a+heroT*9); const x=cx+sx*rr*warp*Math.cos(a); const y=cy+sy*rr*Math.sin(a)+18*DPR*Math.sin(a*2+heroT*4)*rr;
       i?hctx.lineTo(x,y):hctx.moveTo(x,y);
     }
-    hctx.strokeStyle=`rgba(109,229,255,${0.018+ring*.004})`;hctx.stroke();
+    const aLine=0.045+ring*.0065;
+    const blueMix=Math.min(1,ring/17);
+    const rCol=Math.round(63+(88-63)*blueMix);
+    const gCol=Math.round(143+(215-143)*blueMix);
+    const bCol=Math.round(232+(244-232)*blueMix);
+    hctx.strokeStyle=`rgba(${rCol},${gCol},${bCol},${aLine})`;
+    hctx.shadowColor='rgba(88,215,244,.13)';
+    hctx.shadowBlur=2.5*DPR;
+    hctx.stroke();
+    hctx.shadowBlur=0;
   }
   for(let k=0;k<10;k++){
     const a=(k/10)*Math.PI*2+heroT*.5; const r=.68+.18*Math.sin(a*2+heroT);
-    const x=cx+sx*r*Math.cos(a),y=cy+sy*r*Math.sin(a);hctx.beginPath();hctx.arc(x,y,1.6*DPR,0,Math.PI*2);hctx.fillStyle='rgba(255,255,255,.65)';hctx.fill();
+    const x=cx+sx*r*Math.cos(a),y=cy+sy*r*Math.sin(a);hctx.beginPath();hctx.arc(x,y,1.6*DPR,0,Math.PI*2);hctx.fillStyle='rgba(255,255,255,.78)';hctx.fill();
   }
   requestAnimationFrame(drawHero);
 } drawHero();
