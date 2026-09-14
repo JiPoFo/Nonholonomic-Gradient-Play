@@ -39,3 +39,7 @@ This rebuild intentionally avoids the earlier card-heavy layout. It uses:
 - a light-background deception section as the visual centerpiece;
 - a single `gamma` slider for the sphere deception example;
 - minimal examples, model-free connection, paper, and author sections.
+
+
+## Running examples update
+The sphere and simplex panels now contain live canvas animations. The sphere animation shows the moving state and state-dependent directions e1/e2; the simplex animation sweeps gamma and traces the exact equilibrium displacement from Example 7.

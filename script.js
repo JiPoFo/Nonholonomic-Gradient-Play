@@ -300,3 +300,161 @@ copyBtn.addEventListener('click',async()=>{
     setTimeout(()=>copyBtn.textContent='Copy',1200);
   }
 });
+
+
+// RUNNING EXAMPLE A — animated sphere with state-dependent actuation directions.
+const sphereExampleCanvas=document.getElementById('sphereExampleCanvas');
+const sex=sphereExampleCanvas.getContext('2d');
+let exT=0;
+
+function sphereProject(p,cx,cy,R){
+  const yaw=-.68,pitch=.38;
+  const cyw=Math.cos(yaw),syw=Math.sin(yaw),cp=Math.cos(pitch),sp=Math.sin(pitch);
+  const X=cyw*p.x+syw*p.z;
+  const Z=-syw*p.x+cyw*p.z;
+  const Y=cp*p.y-sp*Z;
+  return {x:cx+X*R,y:cy-Y*R,z:sp*p.y+cp*Z};
+}
+function drawSphereExample(){
+  const {w,h}=sizeCanvas(sphereExampleCanvas);
+  sex.clearRect(0,0,w,h);
+  exT+=.012;
+
+  const cx=w*.48,cy=h*.47,R=Math.min(w,h)*.35;
+
+  // sphere
+  const grd=sex.createRadialGradient(cx-R*.28,cy-R*.32,R*.05,cx,cy,R);
+  grd.addColorStop(0,'rgba(66,105,88,.20)');
+  grd.addColorStop(.7,'rgba(13,20,18,.82)');
+  grd.addColorStop(1,'rgba(7,10,11,.97)');
+  sex.fillStyle=grd;sex.beginPath();sex.arc(cx,cy,R,0,Math.PI*2);sex.fill();
+
+  sex.lineWidth=.65*DPR;
+  for(let z=.18;z<=.9;z+=.18){
+    const rr=Math.sqrt(1-z*z);
+    sex.strokeStyle='rgba(159,199,181,.14)';
+    sex.beginPath();
+    for(let k=0;k<=90;k++){
+      const a=2*Math.PI*k/90;
+      const q=sphereProject({x:rr*Math.cos(a),y:rr*Math.sin(a),z},cx,cy,R);
+      k?sex.lineTo(q.x,q.y):sex.moveTo(q.x,q.y);
+    }
+    sex.stroke();
+  }
+  for(let m=0;m<9;m++){
+    const a=2*Math.PI*m/9;
+    sex.strokeStyle='rgba(255,255,255,.055)';
+    sex.beginPath();
+    for(let k=0;k<=55;k++){
+      const th=(Math.PI/2)*k/55;
+      const q=sphereProject({x:Math.sin(th)*Math.cos(a),y:Math.sin(th)*Math.sin(a),z:Math.cos(th)},cx,cy,R);
+      k?sex.lineTo(q.x,q.y):sex.moveTo(q.x,q.y);
+    }
+    sex.stroke();
+  }
+
+  // animated state on upper hemisphere
+  const th=.62 + .18*Math.sin(exT*.7);
+  const ph=exT;
+  const p3={x:Math.sin(th)*Math.cos(ph),y:Math.sin(th)*Math.sin(ph),z:Math.cos(th)};
+  const P=sphereProject(p3,cx,cy,R);
+
+  const e1={x:p3.z,y:0,z:-p3.x};
+  const e2={x:0,y:p3.z,z:-p3.y};
+  const eps=.16;
+  const E1=sphereProject({x:p3.x+eps*e1.x,y:p3.y+eps*e1.y,z:p3.z+eps*e1.z},cx,cy,R);
+  const E2=sphereProject({x:p3.x+eps*e2.x,y:p3.y+eps*e2.y,z:p3.z+eps*e2.z},cx,cy,R);
+
+  sex.shadowColor='#f0efe9';sex.shadowBlur=9*DPR;sex.fillStyle='#f0efe9';
+  sex.beginPath();sex.arc(P.x,P.y,4.2*DPR,0,Math.PI*2);sex.fill();sex.shadowBlur=0;
+  arrow(sex,P.x,P.y,(E1.x-P.x)*3.6,(E1.y-P.y)*3.6,'#9fc7b5',1,1.9);
+  arrow(sex,P.x,P.y,(E2.x-P.x)*3.6,(E2.y-P.y)*3.6,'#b3a2e7',1,1.9);
+
+  sex.font=`${9*DPR}px DM Mono, monospace`;
+  sex.fillStyle='#9fc7b5';sex.fillText('e₁',P.x+(E1.x-P.x)*2.2+5*DPR,P.y+(E1.y-P.y)*2.2);
+  sex.fillStyle='#b3a2e7';sex.fillText('e₂',P.x+(E2.x-P.x)*2.2+5*DPR,P.y+(E2.y-P.y)*2.2);
+
+  requestAnimationFrame(drawSphereExample);
+}
+drawSphereExample();
+
+
+// RUNNING EXAMPLE B — simplex and exact linear equilibrium displacement.
+const simplexExampleCanvas=document.getElementById('simplexExampleCanvas');
+const six=simplexExampleCanvas.getContext('2d');
+let simplexT=0;
+
+function baryToXY(x1,x2,x3,A,B,C){
+  return {
+    x:x1*A.x+x2*B.x+x3*C.x,
+    y:x1*A.y+x2*B.y+x3*C.y
+  };
+}
+function drawSimplexExample(){
+  const {w,h}=sizeCanvas(simplexExampleCanvas);
+  six.clearRect(0,0,w,h);
+  simplexT+=.012;
+
+  const A={x:w*.16,y:h*.76},B={x:w*.84,y:h*.76},C={x:w*.50,y:h*.16};
+
+  // simplex fill and boundary
+  const g=six.createLinearGradient(A.x,A.y,C.x,C.y);
+  g.addColorStop(0,'rgba(159,199,181,.025)');
+  g.addColorStop(1,'rgba(179,162,231,.06)');
+  six.fillStyle=g;
+  six.beginPath();six.moveTo(A.x,A.y);six.lineTo(B.x,B.y);six.lineTo(C.x,C.y);six.closePath();six.fill();
+  six.strokeStyle='rgba(255,255,255,.20)';six.lineWidth=1*DPR;six.stroke();
+
+  // barycentric grid
+  six.strokeStyle='rgba(255,255,255,.045)';six.lineWidth=.6*DPR;
+  for(let q=.2;q<1;q+=.2){
+    let p1=baryToXY(q,0,1-q,A,B,C),p2=baryToXY(q,1-q,0,A,B,C);
+    line(six,p1.x,p1.y,p2.x,p2.y,'rgba(255,255,255,.045)',.6);
+    p1=baryToXY(0,q,1-q,A,B,C);p2=baryToXY(1-q,q,0,A,B,C);
+    line(six,p1.x,p1.y,p2.x,p2.y,'rgba(255,255,255,.045)',.6);
+    p1=baryToXY(0,1-q,q,A,B,C);p2=baryToXY(1-q,0,q,A,B,C);
+    line(six,p1.x,p1.y,p2.x,p2.y,'rgba(255,255,255,.045)',.6);
+  }
+
+  // Example 7 with alpha=0.25, safely inside admissible range for a visual sweep.
+  const alpha=.25, beta=1-3*alpha;
+  const gamma=.85*Math.sin(simplexT*.55);
+
+  function Xstar(gam){
+    return [
+      ((2-3*alpha)+gam*beta)/3,
+      ((2-3*alpha)-2*gam*beta)/3,
+      ((6*alpha-1)+gam*beta)/3
+    ];
+  }
+
+  // path over gamma sweep
+  six.strokeStyle='rgba(231,119,93,.34)';six.lineWidth=1.5*DPR;six.beginPath();
+  for(let k=0;k<=100;k++){
+    const gam=-.9+1.8*k/100;
+    const x=Xstar(gam),P=baryToXY(x[0],x[1],x[2],A,B,C);
+    k?six.lineTo(P.x,P.y):six.moveTo(P.x,P.y);
+  }
+  six.stroke();
+
+  const x0=Xstar(0),P0=baryToXY(x0[0],x0[1],x0[2],A,B,C);
+  const x=Xstar(gamma),P=baryToXY(x[0],x[1],x[2],A,B,C);
+
+  six.fillStyle='#9fc7b5';six.beginPath();six.arc(P0.x,P0.y,3.8*DPR,0,Math.PI*2);six.fill();
+  six.shadowColor='#e7775d';six.shadowBlur=10*DPR;six.fillStyle='#e7775d';
+  six.beginPath();six.arc(P.x,P.y,5*DPR,0,Math.PI*2);six.fill();six.shadowBlur=0;
+
+  // displacement vector
+  arrow(six,P0.x,P0.y,P.x-P0.x,P.y-P0.y,'#e7775d',.85,1.3);
+
+  six.font=`${9*DPR}px DM Mono, monospace`;
+  six.fillStyle='rgba(240,239,233,.60)';
+  six.fillText('x₁',A.x-2*DPR,A.y+16*DPR);
+  six.fillText('x₂',B.x-8*DPR,B.y+16*DPR);
+  six.fillText('x₃',C.x-4*DPR,C.y-8*DPR);
+  six.fillStyle='#e7775d';
+  six.fillText(`γ = ${gamma.toFixed(2)}`,14*DPR,18*DPR);
+
+  requestAnimationFrame(drawSimplexExample);
+}
+drawSimplexExample();

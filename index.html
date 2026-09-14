@@ -254,7 +254,13 @@
           <p>
             Two rank-one, non-commuting distributions span the tangent space on the upper hemisphere. For the paper's payoff choice, the nominal equilibrium is \(x^\star=(0,0,1)\).
           </p>
-          <div class="example-graphic sphere-mini" aria-hidden="true"></div>
+          <div class="example-live">
+            <canvas id="sphereExampleCanvas" aria-label="Animated sphere example"></canvas>
+            <div class="example-live-caption">
+              <span>LIVE GEOMETRY</span>
+              A point moves on the upper hemisphere while the two admissible directions \(e_1,e_2\) evolve with the state.
+            </div>
+          </div>
         </article>
         <article class="example">
           <div class="example-number">B</div>
@@ -262,7 +268,14 @@
           <p>
             A two-player resource-allocation game on the interior of the 2-simplex. Under deception, the equilibrium displacement is exactly linear in \(\gamma\).
           </p>
-          <div class="simplex-eq">
+          <div class="example-live">
+            <canvas id="simplexExampleCanvas" aria-label="Animated simplex equilibrium shift"></canvas>
+            <div class="example-live-caption">
+              <span>DECEPTION SWEEP</span>
+              The marker traces \(X^\star(\gamma)\) as \(\gamma\) varies, making the linear equilibrium displacement visible directly on the simplex.
+            </div>
+          </div>
+          <div class="simplex-eq compact">
             \[
             X^\star(\gamma)-X^\star(0)
             =
